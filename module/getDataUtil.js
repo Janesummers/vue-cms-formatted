@@ -42,7 +42,7 @@ let setNews = (req, resp) => {
     mysqlOpt.exec(
       `insert into content
         values (?,?,?,?,?,?)`,
-      mysqlOpt.formatParams(null, news[i].docid, text, 0, news[i].url),
+      mysqlOpt.formatParams(null, news[i].docid, text, 0, news[i].url, null),
       res => {
         if (len > 0) {
           len--;

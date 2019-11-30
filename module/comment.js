@@ -4,7 +4,7 @@ const msgResult = require('./msgResult');
 
 var getComments = (req, resp) => {
   var params = qs.parse(req.body);
-  if (!params || !params.belongId || params.belongId.length !== 19) {
+  if (!params || !params.belongId || (params.belongId.length !== 16 && params.belongId.length !== 19)) {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
@@ -28,7 +28,7 @@ var getComments = (req, resp) => {
 
 var addComment = (req, resp) => {
   var params = qs.parse(req.body);
-  if (!params || !params.id || params.belongId.length !== 19) {
+  if (!params || !params.id || (params.belongId.length !== 16 && params.belongId.length !== 19)) {
     resp.json(msgResult.error("参数不合法"));
     return;
   }

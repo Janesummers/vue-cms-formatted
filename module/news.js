@@ -14,7 +14,8 @@ var getList = (req, resp) => {
   mysqlOpt.exec(
     `select a.title, a.id, a.content_id, a.img, a.time, b.hits, b.url
      from news a, content b
-		 where a.content_id = b.content_id
+     where a.content_id = b.content_id
+     order by a.time desc
      limit ?,?`,
     mysqlOpt.formatParams((pageNo - 1) * pageSize, pageSize),
     res => {
@@ -33,7 +34,7 @@ var getNewsInfo = (req, resp) => {
   //   resp.json(msgResult.error("参数不合法"));
   //   return;
   // }
-  if (!params || !params.id || params.id.length !== 16) {
+  if (!params || !params.id || (params.id.length !== 16 && params.id.length !== 19)) {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
@@ -58,7 +59,7 @@ let saveNewList = (req, resp) => {
 
 var updateHits = (req, resp) => {
   var params = qs.parse(req.body);
-  if (!params || !params.id || params.id.length !== 19) {
+  if (!params || !params.id || (params.id.length !== 16 && params.id.length !== 19)) {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
@@ -68,7 +69,7 @@ var updateHits = (req, resp) => {
      where content_id = ?`,
     mysqlOpt.formatParams(params.id),
     res => {
-      resp.json(msgResult.msg(res));
+      getHits(params.id, resp)
     },
     e => {
       console.log(msgResult.error(e.message));
@@ -76,6 +77,21 @@ var updateHits = (req, resp) => {
     }
   )
 };
+
+var getHits = (id, resp) => {
+  mysqlOpt.exec(
+    `select hits from content
+     where content_id = ?`,
+    mysqlOpt.formatParams(id),
+    res => {
+      resp.json(msgResult.msg(res));
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+      resp.end()
+    }
+  )
+}
 
 module.exports = {
   getList,
