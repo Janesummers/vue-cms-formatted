@@ -85,19 +85,35 @@ let setImg = (req, resp) => {
   function save (...params) {
     let {urls, id, time, title, brief, bid} = params[0];
     // resp.json(msgResult.msg([]));
+    let len = urls.length - 1;
+    let i = 0;
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, bid, urls[0], id, title, brief, time),
+      res => {
+        run();
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+    // run();
     function run () {
       mysqlOpt.exec(
         `insert into imgs
           values (?,?,?,?,?,?,?)`,
-        mysqlOpt.formatParams(null, bid, news[i].docid, news[i].imgsrc, news[i].ptime),
+        mysqlOpt.formatParams(null, id, urls[i], id, title, brief, time),
         res => {
-          http.get(news[i].url, function(res) {
-            res.pipe(iconv.decodeStream('utf8')).collect(function(err, decodedBody) {
-              let text = decodedBody.match(/(?<=\<div class="page js-page on"\>)[\W\w]+?(?=<\/article.*>)/)[0];
-              text = text.replace(/(<a.*>?)|(\<\/a>?)|(<video[\w\W]*>?\<\/video>)|(精彩弹幕，尽在客户端)|(<span>.*?\<\/span>)|(<span>\w*?)|(<div class\="(otitle_editor|type)">[\w\W]*?<\/div>)|(\&[\w\W]*?;)|data-|\n|\r/g, "");
-              save2(text.trim().substring(0, 7000));
-            });
-          });
+          if (len > 0) {
+            len--;
+            i++;
+            run();
+          } else {
+            resp.json(msgResult.msg(res));
+          }
+          
         },
         e => {
           console.log(msgResult.error(e.message));

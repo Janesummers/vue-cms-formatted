@@ -9,9 +9,13 @@ var getImages = (req, resp) => {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
+  let pageNo = params.pageNo ? parseInt(params.pageNo) : 1;
+  let pageSize = params.pageSize ? parseInt(params.pageSize) : 4;
   mysqlOpt.exec(
-    "select * from imgs where belongId = ?",
-    mysqlOpt.formatParams(params.belongId),
+    `select * from imgs 
+     where belongId = ?
+     limit ?,?`,
+    mysqlOpt.formatParams(params.belongId, (pageNo - 1) * pageSize, pageSize),
     res => {
       resp.json(msgResult.msg(res));
     },
@@ -22,20 +26,7 @@ var getImages = (req, resp) => {
 };
 
 var setImages = (req, resp) => {
-  // var params = qs.parse(req.body);
-
   getDataUtil.setImg(req, resp);
-
-  // mysqlOpt.exec(
-  //   "select * from imgs where belongId = ?",
-  //   mysqlOpt.formatParams(params.belongId),
-  //   res => {
-  //     resp.json(msgResult.msg(res));
-  //   },
-  //   e => {
-  //     console.log(msgResult.error(e.message));
-  //   }
-  // )
 };
 
 module.exports = {
