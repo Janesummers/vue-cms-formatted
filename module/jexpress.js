@@ -78,6 +78,11 @@ app.post('/getGoods', (req, resp) => {
   goods.getGoods(req, resp)
 });
 
+app.post('/setGoods', (req, resp) => {
+  goods.setGoods(req, resp)
+});
+
+
 app.post("/getMyGoods", (req, resp) => {
   goods.getMyGoods(req, resp);
 });

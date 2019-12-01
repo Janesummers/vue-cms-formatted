@@ -1,6 +1,7 @@
 const mysqlOpt = require('../util/mysqlOpt');
 const qs = require('qs');
 const msgResult = require('./msgResult');
+const getDataUtil = require('./getDataUtil');
 var getGoods = (req, resp) => {
   var params = qs.parse(req.body);
   if (!params) {
@@ -8,7 +9,7 @@ var getGoods = (req, resp) => {
     return;
   }
   let pageNo = params.pageNo ? parseInt(params.pageNo) : 1;
-  let pageSize = params.pageSize ? parseInt(params.pageSize) : 3;
+  let pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
   mysqlOpt.exec(
     "select * from goods limit ?,?",
     mysqlOpt.formatParams((pageNo - 1) * pageSize, pageSize),
@@ -20,6 +21,10 @@ var getGoods = (req, resp) => {
     }
   )
 };
+
+var setGoods = (req, resp) => {
+  getDataUtil.setGoods(req, resp);
+}
 
 var getMyGoods = (req, resp) => {
   var params = qs.parse(req.body);
@@ -147,5 +152,6 @@ module.exports = {
   addToCar,
   updateCard,
   delMyGoods,
-  payForGoods
+  payForGoods,
+  setGoods
 };

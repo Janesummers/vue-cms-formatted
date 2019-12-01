@@ -9,7 +9,7 @@ var getComments = (req, resp) => {
     return;
   }
   let pageNo = params.pageNo ? parseInt(params.pageNo) : 1;
-  let pageSize = params.pageSize ? parseInt(params.pageSize) : 3;
+  let pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
   mysqlOpt.exec(
     `select * 
      from comments  
