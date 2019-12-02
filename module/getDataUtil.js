@@ -14,47 +14,69 @@ let setNews = (req, resp) => {
   let i = 0;
 
   function save1 () {
-    if (!news[i].url.includes("http")) {
+    console.log(news[i].docid, news[i].docid.length < 16, !news[i].url.includes("http") && news[i].docid.length < 16 && len > 0)
+    if (!news[i].url.includes("http") && news[i].docid.length < 16 && len > 0) {
       len--;
       i++;
       save1();
+      // return;
     }
-    mysqlOpt.exec(
-      `insert into news
-        values (?,?,?,?,?)`,
-      mysqlOpt.formatParams(null, news[i].title, news[i].docid, news[i].imgsrc, news[i].ptime),
-      res => {
-        if (news[i].url.includes("https")) {
-          https.get(news[i].url, function(res) {
-            res.pipe(iconv.decodeStream('utf8')).collect(function(err, decodedBody) {
-              let text = decodedBody.match(/(?<=\<div class="page js-page on"\>)[\W\w]+?(?=<\/article.*>)/)[0];
-              text = text.replace(/(<a.*>?)|(\<\/a>?)|(<video[\w\W]*>?\<\/video>)|(精彩弹幕，尽在客户端)|(<span>.*?\<\/span>)|(<span>\w*?)|(<div class\="(otitle_editor|type)">[\w\W]*?<\/div>)|(\&[\w\W]*?;)|data-|\n|\r/g, "");
-              save2(text.trim().substring(0, 7000));
-            });
-          });
-        } else {
-          http.get(news[i].url, function(res) {
-            res.pipe(iconv.decodeStream('utf8')).collect(function(err, decodedBody) {
-              let text = decodedBody.match(/(?<=\<div class="page js-page on"\>)[\W\w]+?(?=<\/article.*>)/)[0];
-              text = text.replace(/(<a.*>?)|(\<\/a>?)|(<video[\w\W]*>?\<\/video>)|(精彩弹幕，尽在客户端)|(<span>.*?\<\/span>)|(<span>\w*?)|(<div class\="(otitle_editor|type)">[\w\W]*?<\/div>)|(\&[\w\W]*?;)|data-|\n|\r/g, "");
-              save2(text.trim().substring(0, 7000));
-            });
-          });
+
+    if (news[i].url.includes("https")) {
+      https.get(news[i].url, function(res) {
+        res.pipe(iconv.decodeStream('utf8')).collect(function(err, decodedBody) {
+          let text = decodedBody.match(/(?<=\<div class="page js-page on"\>)[\W\w]+?(?=<\/article.*>)/);
+          console.error(text)
+          if (!text) {
+            len--;
+            i++;
+            save1();
+            // return;
+          } else {
+            saveTo(text);
+          }
+        });
+      });
+    } else if (news[i].url.includes("http")) {
+      http.get(news[i].url, function(res) {
+        res.pipe(iconv.decodeStream('utf8')).collect(function(err, decodedBody) {
+          let text = decodedBody.match(/(?<=\<div class="page js-page on"\>)[\W\w]+?(?=<\/article.*>)/);
+          console.error(text)
+          if (!text) {
+            len--;
+            i++;
+            save1();
+            // return;
+          } else {
+           saveTo(text);
+          }
+          
+        });
+      });
+    }
+    function saveTo (text) {
+      mysqlOpt.exec(
+        `insert into news
+          values (?,?,?,?,?)`,
+        mysqlOpt.formatParams(null, news[i].title, news[i].docid, news[i].imgsrc, news[i].ptime),
+        res => {
+          text = text[0].replace(/(<a.*>?)|(\<\/a>?)|(<video[\w\W]*>?\<\/video>)|(精彩弹幕，尽在客户端)|(<span>.*?\<\/span>)|(<span>\w*?)|(<div class\="(otitle_editor|type)">[\w\W]*?<\/div>)|(\&[\w\W]*?;)|data-|\n|\r/g, "");
+          save2(text.trim().substring(0, 7000));
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
         }
-        
-      },
-      e => {
-        console.log(msgResult.error(e.message));
-        resp.end()
-      }
-    )
+      )
+    }
+    
   }
   save1();
   function save2 (text) {
     mysqlOpt.exec(
       `insert into content
-        values (?,?,?,?,?,?)`,
-      mysqlOpt.formatParams(null, news[i].docid, text, 0, news[i].url, null),
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, news[i].docid, text, 0, news[i].url, null, news[i].ptime),
       res => {
         if (len > 0) {
           len--;
