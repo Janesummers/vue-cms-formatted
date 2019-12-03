@@ -505,7 +505,6 @@ let setGoods = (req, resp) => {
   let i = 0;
   save();
   function save () {
-    let p = parseInt((parseFloat(prices[i]) * 0.6 * 100)) / 100;
     mysqlOpt.exec(
       `insert into goods
         values (?,?,?,?,?,?,?,?)`,
@@ -531,9 +530,66 @@ let setGoods = (req, resp) => {
 
   // resp.json(msgResult.msg("ok"));
 }
+
+let goodsDetails = `["http://item.taobao.com/item.htm?id=36012624471&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%2236012624471%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=37201709325&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%2237201709325%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=521144181859&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22521144181859%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=521434702832&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22521434702832%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=523728727294&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22523728727294%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=524648112655&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22524648112655%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=528281499958&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22528281499958%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=531438907266&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22531438907266%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=533722307193&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22533722307193%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=537880597611&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22537880597611%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=538919842098&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22538919842098%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=534326768333&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22534326768333%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=543695676074&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22543695676074%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=536060024619&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22536060024619%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=558187174142&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22558187174142%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=561064326259&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22561064326259%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=550247199933&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22550247199933%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=553202722110&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22553202722110%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=563297731739&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22563297731739%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=565502102029&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22565502102029%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=566870400537&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22566870400537%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=566916890706&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22566916890706%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=567847350480&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22567847350480%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=568758078761&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22568758078761%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=569531082908&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22569531082908%22%7D&amp;spm=a2141.8138988.guess.0","http://item.taobao.com/item.htm?id=570234141472&amp;scm=1007.18975.103645.0&amp;pvid=ba92b609-b478-4631-9069-45855a11afce&amp;utparam=%7B%22ranger_buckets_native%22%3A%22%22%2C%22x_object_type%22%3A%22item%22%2C%22mtx_ab%22%3A1%2C%22mtx_sab%22%3A0%2C%22scm%22%3A%221007.18975.103645.0%22%2C%22x_object_id%22%3A%22570234141472%22%7D&amp;spm=a2141.8138988.guess.0"]`;
+goodsDetails = JSON.parse(goodsDetails);
+
+let saveGoodsDetail = (req, resp) => {
+  let data = `{"id":"2019120120055810737","content_id":"2019120120055814652","banner":["http://gd2.alicdn.com/imgextra/i1/1051737231/TB2NxbcubSYBuNjSspfXXcZCpXa_!!1051737231.jpg_500x500.jpg","http://gd3.alicdn.com/imgextra/i3/1051737231/TB2sTpEl3KTBuNkSne1XXaJoXXa_!!1051737231.jpg_500x500.jpg","http://gd3.alicdn.com/imgextra/i3/1051737231/TB2y_VmlZuYBuNkSmRyXXcA3pXa_!!1051737231.jpg_500x500.jpg"],"descriptionImgs":["https://img.alicdn.com/imgextra/i3/1051737231/TB2sTpEl3KTBuNkSne1XXaJoXXa_!!1051737231.jpg","https://img.alicdn.com/imgextra/i3/1051737231/TB2y_VmlZuYBuNkSmRyXXcA3pXa_!!1051737231.jpg","https://img.alicdn.com/imgextra/i1/1051737231/TB2CQYks25TBuNjSspmXXaDRVXa_!!1051737231.jpg"]}`
+  data = JSON.parse(data);
+  let len = data.banner.length - 1;
+  let i = 0;
+  saveBanner();
+  function saveBanner () {
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, data.id, data.banner[i], null, null, null, null),
+      res => {
+        if (len > 0) {
+          len--;
+          i++;
+          saveBanner();
+        } else {
+          len = data.descriptionImgs.length - 1;
+          i = 0;
+          saveDescription();
+        }
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+
+  function saveDescription () {
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, data.content_id, data.descriptionImgs[i], null, null, null, null),
+      res => {
+        if (len > 0) {
+          len--;
+          i++;
+          saveDescription();
+        } else {
+          resp.json(msgResult.msg(res));
+        }
+        
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+}
+
 module.exports = {
   setImg,
   setNews,
-  setGoods
+  setGoods,
+  saveGoodsDetail
 };
 

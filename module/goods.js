@@ -26,6 +26,10 @@ var setGoods = (req, resp) => {
   getDataUtil.setGoods(req, resp);
 }
 
+var saveGoodsDetail = (req, resp) => {
+  getDataUtil.saveGoodsDetail(req, resp);
+}
+
 var getMyGoods = (req, resp) => {
   var params = qs.parse(req.body);
   if (!params || !params.belongId || params.belongId.length !== 19 || !params.status) {
@@ -153,5 +157,6 @@ module.exports = {
   updateCard,
   delMyGoods,
   payForGoods,
-  setGoods
+  setGoods,
+  saveGoodsDetail
 };
