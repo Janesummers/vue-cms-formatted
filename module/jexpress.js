@@ -107,6 +107,10 @@ app.post('/payForGoods', (req, resp) => {
   goods.payForGoods(req, resp);
 });
 
+app.post('/clearAllMyGoods', (req, resp) => {
+  goods.clearAllMyGoods(req, resp);
+});
+
 
 const comments = require('./comment');
 app.post('/getCommentByPage', (req, resp) => {
@@ -115,6 +119,18 @@ app.post('/getCommentByPage', (req, resp) => {
 
 app.post('/addComment', (req, resp) => {
   comments.addComment(req, resp);
+});
+
+
+const movie = require("./movie");
+app.post("/saveMovie", (req, resp) => {
+  movie.saveMovie(req, resp);
+});
+app.post("/getMovie", (req, resp) => {
+  movie.getMovie(req, resp);
+});
+app.post("/getMovieInfo", (req, resp) => {
+  movie.getMovieInfo(req, resp);
 });
 
 

@@ -5,7 +5,7 @@ let pool = mysql.createPool({
   user: 'root',
   password: 'root',
   port: '3306',
-  database: 'xunke'
+  database: 'cms'
 });
 
 function getConnection(callback) {

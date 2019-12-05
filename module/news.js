@@ -39,7 +39,7 @@ var getNewsInfo = (req, resp) => {
     return;
   }
   mysqlOpt.exec(
-    `select a.time, b.hits, b.content, b.content2, a.title 
+    `select a.time, b.hits, b.content, a.title 
      from news a, content b
      where b.content_id = ? && a.content_id = b.content_id`,
     mysqlOpt.formatParams(params.id),

@@ -149,6 +149,53 @@ var payForGoods = (req, resp) => {
 
 };
 
+let clearAllMyGoods = (req, resp) => {
+  var params = qs.parse(req.body);
+  if (!params || params.belongId.length !== 19 || !params.list) {
+    resp.json(msgResult.error("参数不合法"));
+    return;
+  }
+  console.log(params.list)
+  function clear(i, callback) {
+    if (i >= 0) {
+      mysqlOpt.exec(
+        `
+      delete card
+      from card
+      where belongId = ? and status = 0
+    `,
+        mysqlOpt.formatParams(params.belongId),
+        res => {
+          i--;
+          clear(i, callback);
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+        }
+      )
+    } else {
+      callback && callback();
+    }
+  }
+  clear(params.list.length - 1, () => {
+    resp.json("ok");
+  })
+  // mysqlOpt.exec(
+  //   `
+  //     delete 
+  //     from card
+  //     where belongId = ? and status = 0
+  //   `,
+  //   mysqlOpt.formatParams(params.id, params.belongId),
+  //   res => {
+  //     resp.json(msgResult.msg(res));
+  //   },
+  //   e => {
+  //     console.log(msgResult.error(e.message));
+  //   }
+  // )
+}
+
 
 module.exports = {
   getGoods,
@@ -158,5 +205,6 @@ module.exports = {
   delMyGoods,
   payForGoods,
   setGoods,
-  saveGoodsDetail
+  saveGoodsDetail,
+  clearAllMyGoods
 };
