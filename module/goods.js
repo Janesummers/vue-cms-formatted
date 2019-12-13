@@ -2,6 +2,8 @@ const mysqlOpt = require('../util/mysqlOpt');
 const qs = require('qs');
 const msgResult = require('./msgResult');
 const getDataUtil = require('./getDataUtil');
+const util = require('../util/util');
+
 var getGoods = (req, resp) => {
   var params = qs.parse(req.body);
   if (!params) {
@@ -23,8 +25,141 @@ var getGoods = (req, resp) => {
 };
 
 var setGoods = (req, resp) => {
-  getDataUtil.setGoods(req, resp);
+  // getDataUtil.setGoods(req, resp);
+  var params = qs.parse(req.body);
+  if (!params || !params.price || !params.img || !params.title || !params.oldPrice || !params.left_count) {
+    resp.json(msgResult.error("参数不合法"));
+    return;
+  }
+  let price = parseFloat(params.price);
+  let oldPrice = parseFloat(params.oldPrice);
+  let bannerImg = params.bannerImg;
+  let detailImg = params.detailImg;
+  let len = bannerImg.length - 1;
+  let i = 0;
+  let id = util.randomNumber();
+  let content_id = util.randomNumber();
+  mysqlOpt.exec(
+    `insert into goods
+      values (?,?,?,?,?,?,?,?)`,
+    mysqlOpt.formatParams(id, params.img, params.title, price, oldPrice, '热卖中', params.left_count, content_id),
+    res => {
+      saveBannerImg();
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+      resp.end()
+    }
+  )
+
+  function saveBannerImg () {
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, id, bannerImg[i], null, null, null, null),
+      res => {
+        if (len > 0) {
+          len--;
+          i++;
+          saveBannerImg();
+        } else {
+          len = detailImg.length - 1;
+          i = 0;
+          saveDetailImg();
+        }
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+
+  function saveDetailImg () {
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, content_id, detailImg[i], null, null, null, null),
+      res => {
+        if (len > 0) {
+          len--;
+          i++;
+          saveDetailImg();
+        } else {
+          resp.json(msgResult.msg("ok"));
+        }
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
 }
+
+var delGoods = (req, resp) => {
+  // getDataUtil.setGoods(req, resp);
+  var params = qs.parse(req.body);
+  if (!params || !params.id || !params.contentId || params.id.length != 19 || params.contentId.length != 19) {
+    resp.json(msgResult.error("参数不合法"));
+    return;
+  }
+  
+  mysqlOpt.exec(
+    `
+      delete 
+      from goods
+      where id = ?
+    `,
+    mysqlOpt.formatParams(params.id),
+    res => {
+      delImg();
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+      resp.end()
+    }
+  )
+  
+  function delImg () {
+    mysqlOpt.exec(
+      `
+        delete 
+        from imgs
+        where belongId in (?,?)
+      `,
+      mysqlOpt.formatParams(params.id, params.contentId),
+      res => {
+        delComment();
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+
+  function delComment () {
+    mysqlOpt.exec(
+      `
+        delete 
+        from comments
+        where belongId = ?
+      `,
+      mysqlOpt.formatParams(params.id),
+      res => {
+        resp.json(msgResult.msg("ok"));
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+
+}
+
+
 
 var saveGoodsDetail = (req, resp) => {
   getDataUtil.saveGoodsDetail(req, resp);
@@ -206,5 +341,6 @@ module.exports = {
   payForGoods,
   setGoods,
   saveGoodsDetail,
-  clearAllMyGoods
+  clearAllMyGoods,
+  delGoods
 };

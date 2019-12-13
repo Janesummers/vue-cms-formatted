@@ -82,6 +82,10 @@ app.post('/setGoods', (req, resp) => {
   goods.setGoods(req, resp)
 });
 
+app.post('/delGoods', (req, resp) => {
+  goods.delGoods(req, resp)
+});
+
 app.post('/saveGoodsDetail', (req, resp) => {
   goods.saveGoodsDetail(req, resp)
 });

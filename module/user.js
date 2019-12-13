@@ -6,12 +6,16 @@ const util = require('../util/util');
 
 var login = (req, resp) => {
   var user = qs.parse(req.body);
-  if (!user || !user.name || !user.pwd) {
+  if (!user || !user.name || !user.pwd || !user.rule) {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
+  let sql = "select * from user where unionid = ? and password = ?";
+  if (user.rule != "user") {
+    sql = "select * from user where unionid = ? and password = ? and rule = 1"
+  }
   mysqlOpt.exec(
-    "select * from user where unionid = ? and password = ?",
+    sql,
     mysqlOpt.formatParams(user.name, user.pwd),
     res => {
       if (res.length > 0) {

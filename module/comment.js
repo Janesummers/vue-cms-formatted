@@ -13,7 +13,7 @@ var getComments = (req, resp) => {
   mysqlOpt.exec(
     `select * 
      from comments  
-     where belongId = ?
+     where belongId = ? and type = 0
      limit ?,?`,
     mysqlOpt.formatParams(params.belongId, (pageNo - 1) * pageSize, pageSize),
     res => {
@@ -32,10 +32,11 @@ var addComment = (req, resp) => {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
+  let type = Number(params.type)
   mysqlOpt.exec(
     `insert into comments
-     values (?,?,?,?,?,?)`,
-    mysqlOpt.formatParams(params.id, params.userName, params.time, params.content, params.belongId, params.userId),
+     values (?,?,?,?,?,?,?)`,
+    mysqlOpt.formatParams(params.id, params.userName, params.time, params.content, params.belongId, params.userId, type),
     res => {
       resp.json(msgResult.msg(res));
     },
