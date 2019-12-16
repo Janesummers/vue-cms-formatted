@@ -25,11 +25,11 @@ var getImages = (req, resp) => {
   )
 };
 
-var setImages = (req, resp) => {
-  getDataUtil.setImg(req, resp);
-};
+// var setImages = (req, resp) => {
+//   getDataUtil.setImg(req, resp);
+// };
 
 module.exports = {
   getImages,
-  setImages
+  // setImages
 };

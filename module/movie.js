@@ -72,14 +72,14 @@ let getMovieInfo = (req, resp) => {
 
 }
 
-let saveMovie = (req, resp) => {
-  getDataUtil.saveMovie(req, resp);
-}
+// let saveMovie = (req, resp) => {
+//   getDataUtil.saveMovie(req, resp);
+// }
 
 
 
 module.exports = {
   getMovie,
-  saveMovie,
+  // saveMovie,
   getMovieInfo
 }

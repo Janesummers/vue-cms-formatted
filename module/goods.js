@@ -44,7 +44,98 @@ var setGoods = (req, resp) => {
       values (?,?,?,?,?,?,?,?)`,
     mysqlOpt.formatParams(id, params.img, params.title, price, oldPrice, '热卖中', params.left_count, content_id),
     res => {
-      saveBannerImg();
+      saveDetailImg();
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+      resp.end()
+    }
+  )
+
+  function saveBannerImg () {
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, id, bannerImg[i], null, null, null, null),
+      res => {
+        if (len > 0) {
+          len--;
+          i++;
+          saveBannerImg();
+        } else {
+          len = detailImg.length - 1;
+          i = 0;
+          saveDetailImg();
+        }
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+
+  function saveDetailImg () {
+    mysqlOpt.exec(
+      `insert into imgs
+        values (?,?,?,?,?,?,?)`,
+      mysqlOpt.formatParams(null, content_id, detailImg[i], null, null, null, null),
+      res => {
+        if (len > 0) {
+          len--;
+          i++;
+          saveDetailImg();
+        } else {
+          resp.json(msgResult.msg("ok"));
+        }
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+        resp.end()
+      }
+    )
+  }
+}
+
+var alterGoods = (req, resp) => {
+  var params = qs.parse(req.body);
+  if (!params || !params.price || !params.img || !params.title || !params.oldPrice || !params.left_count) {
+    resp.json(msgResult.error("参数不合法"));
+    return;
+  }
+  let price = parseFloat(params.price);
+  let oldPrice = parseFloat(params.oldPrice);
+  let bannerImg = params.bannerImg;
+  let detailImg = params.detailImg;
+  let len = 0;
+  if (bannerImg) {
+    len = bannerImg.length - 1;
+  }
+  let i = 0;
+  let id = params.id;
+  let content_id = params.content_id;
+  mysqlOpt.exec(
+    `
+      update goods
+      set img = ?,name = ?,new_price = ?,old_price = ?,left_count = ?
+      where id = ?
+    `,
+    mysqlOpt.formatParams(params.img, params.title, price, oldPrice, params.left_count, id),
+    res => {
+      if (len > 0) {
+        saveBannerImg();
+      } else {
+        if (detailImg) {
+          len = detailImg.length - 1;
+          i = 0;
+          if (len > 0) {
+            saveDetailImg();
+          }
+        } else {
+          resp.json(msgResult.msg("ok"));
+        }
+        
+      }
     },
     e => {
       console.log(msgResult.error(e.message));
@@ -161,21 +252,21 @@ var delGoods = (req, resp) => {
 
 
 
-var saveGoodsDetail = (req, resp) => {
-  getDataUtil.saveGoodsDetail(req, resp);
-}
+// var saveGoodsDetail = (req, resp) => {
+//   getDataUtil.saveGoodsDetail(req, resp);
+// }
 
 var getMyGoods = (req, resp) => {
   var params = qs.parse(req.body);
-  if (!params || !params.belongId || params.belongId.length !== 19 || !params.status) {
+  if (!params || !params.belongId || params.belongId.length !== 19) {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
   mysqlOpt.exec(
-    `select a.*, b.left_count, b.img, b.name as title, b.new_price as price 
-     from card a, goods b 
-     where a.goods_id = b.id and a.status = ? and a.belongId = ?`,
-    mysqlOpt.formatParams(params.status, params.belongId),
+    `select a.order_id, a.pay_money, a.time, b.id, b.goods_name as name, b.goods_price as price, b.goods_count as count, c.img 
+     from orders a, goodsOrder b, goods c 
+     where a.order_id = b.order_id and b.goods_id = c.id and a.belongId = ?`,
+    mysqlOpt.formatParams(params.belongId),
     res => {
       resp.json(msgResult.msg(res));
     },
@@ -228,6 +319,28 @@ var updateCard =  (req, resp) => {
   )
 };
 
+let getMyShopCart = (req, resp) => {
+  var params = qs.parse(req.body);
+  if (!params || !params.belongId || params.belongId.length !== 19) {
+    resp.json(msgResult.error("参数不合法"));
+    return;
+  }
+  mysqlOpt.exec(
+    `
+      select a.id, a.count, a.goods_id, b.img, b.name as title, b.new_price as price
+      from card a, goods b
+      where a.belongId = ? and b.id = a.goods_id
+    `,
+    mysqlOpt.formatParams(params.belongId),
+    res => {
+      resp.json(msgResult.msg(res));
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+    }
+  )
+}
+
 var delMyGoods = (req, resp) => {
   var params = qs.parse(req.body);
   if (!params || !params.belongId || params.belongId.length !== 19 || !params.id) {
@@ -256,31 +369,92 @@ var payForGoods = (req, resp) => {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
-  // console.log(params.list[0]);
-  function pay(i, callback) {
+  let order_id = util.randomNumber();
+  let time = util.getTime();
+  let allPrice = parseFloat(params.allPrice);
+  let addOrder = () => {
+    mysqlOpt.exec(
+      `
+        insert into orders
+        values(?,?,?,?,?)
+      `,
+      mysqlOpt.formatParams(
+        null, 
+        order_id, 
+        allPrice,
+        params.belongId,
+        time
+      ),
+      res => {
+        resp.json("ok");
+      },
+      e => {
+        console.log(msgResult.error(e.message));
+      }
+    )
+  }
+  function pay(i) {
     if (i >= 0) {
       mysqlOpt.exec(
         `
-      update card
-      set status = 1
-      where id = ? and belongId = ?
-    `,
-        mysqlOpt.formatParams(params.list[i].id, params.belongId),
+          update card c, goods g
+          set g.left_count = g.left_count - c.count
+          where c.belongId = ? and c.id = ? and c.goods_id = g.id
+        `,
+        mysqlOpt.formatParams(params.belongId, params.list[i].id),
         res => {
-          i--;
-          pay(i, callback);
+          delShopCard();
         },
         e => {
           console.log(msgResult.error(e.message));
         }
       )
+      let delShopCard = () => {
+        mysqlOpt.exec(
+          `
+            delete 
+            from card
+            where id = ? and belongId = ?
+          `,
+          mysqlOpt.formatParams(params.list[i].id, params.belongId),
+          res => {
+            addGoodsOrder();
+          },
+          e => {
+            console.log(msgResult.error(e.message));
+          }
+        )
+      }
+      let addGoodsOrder = () => {
+        let price = parseFloat(params.list[i].price);
+        let count = parseInt(params.list[i].count);
+        mysqlOpt.exec(
+          `
+            insert into goodsOrder
+            values(?,?,?,?,?,?)
+          `,
+          mysqlOpt.formatParams(
+            null,
+            order_id,
+            params.list[i].title,
+            price, 
+            count,
+            params.list[i].goods_id
+          ),
+          res => {
+            i--;
+            pay(i);
+          },
+          e => {
+            console.log(msgResult.error(e.message));
+          }
+        )
+      }
     } else {
-      callback && callback();
+      addOrder();
     }
   }
-  pay(params.list.length - 1, () => {
-    resp.json("ok");
-  })
+  pay(params.list.length - 1)
 
 };
 
@@ -290,15 +464,14 @@ let clearAllMyGoods = (req, resp) => {
     resp.json(msgResult.error("参数不合法"));
     return;
   }
-  console.log(params.list)
   function clear(i, callback) {
     if (i >= 0) {
       mysqlOpt.exec(
-        `
-      delete card
-      from card
-      where belongId = ? and status = 0
-    `,
+      `
+        delete card
+        from card
+        where belongId = ?
+      `,
         mysqlOpt.formatParams(params.belongId),
         res => {
           i--;
@@ -315,32 +488,41 @@ let clearAllMyGoods = (req, resp) => {
   clear(params.list.length - 1, () => {
     resp.json("ok");
   })
-  // mysqlOpt.exec(
-  //   `
-  //     delete 
-  //     from card
-  //     where belongId = ? and status = 0
-  //   `,
-  //   mysqlOpt.formatParams(params.id, params.belongId),
-  //   res => {
-  //     resp.json(msgResult.msg(res));
-  //   },
-  //   e => {
-  //     console.log(msgResult.error(e.message));
-  //   }
-  // )
+}
+
+let getOnceGoods = (req, resp) => {
+  var params = qs.parse(req.body);
+  if (!params || params.id.length !== 19) {
+    resp.json(msgResult.error("参数不合法"));
+    return;
+  }
+  mysqlOpt.exec(
+    `
+      select * from goods where id = ?
+    `,
+    mysqlOpt.formatParams(params.id),
+    res => {
+      resp.json(msgResult.msg(res));
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+    }
+  )
 }
 
 
 module.exports = {
   getGoods,
   getMyGoods,
+  getMyShopCart,
   addToCar,
   updateCard,
   delMyGoods,
   payForGoods,
   setGoods,
-  saveGoodsDetail,
+  // saveGoodsDetail,
   clearAllMyGoods,
-  delGoods
+  delGoods,
+  getOnceGoods,
+  alterGoods
 };

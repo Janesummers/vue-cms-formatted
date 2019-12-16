@@ -44,9 +44,9 @@ app.post("/getImgs", (req, resp) => {
   images.getImages(req, resp);
 });
 
-app.post("/setImgs", (req, resp) => {
-  images.setImages(req, resp);
-});
+// app.post("/setImgs", (req, resp) => {
+//   images.setImages(req, resp);
+// });
 
 // 获取新闻
 const news = require('./news');
@@ -86,14 +86,26 @@ app.post('/delGoods', (req, resp) => {
   goods.delGoods(req, resp)
 });
 
-app.post('/saveGoodsDetail', (req, resp) => {
-  goods.saveGoodsDetail(req, resp)
-});
+// app.post('/saveGoodsDetail', (req, resp) => {
+//   goods.saveGoodsDetail(req, resp)
+// });
+
+app.post('/getOnceGoods', (req, resp) => {
+  goods.getOnceGoods(req, resp);
+})
+
+app.post('/alterGoods', (req, resp) => {
+  goods.alterGoods(req, resp);
+})
 
 
-app.post("/getMyGoods", (req, resp) => {
+app.post('/getMyGoods', (req, resp) => {
   goods.getMyGoods(req, resp);
 });
+
+app.post('/getMyShopCart', (req, resp) => {
+  goods.getMyShopCart(req, resp);
+})
 
 app.post('/addToCar', (req, resp) => {
   goods.addToCar(req, resp);
@@ -127,9 +139,9 @@ app.post('/addComment', (req, resp) => {
 
 
 const movie = require("./movie");
-app.post("/saveMovie", (req, resp) => {
-  movie.saveMovie(req, resp);
-});
+// app.post("/saveMovie", (req, resp) => {
+//   movie.saveMovie(req, resp);
+// });
 app.post("/getMovie", (req, resp) => {
   movie.getMovie(req, resp);
 });
