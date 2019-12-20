@@ -38,8 +38,8 @@ var register = (req, resp) => {
   }
   let id = util.randomNumber();
   mysqlOpt.exec(
-    "insert into user values (?,?,?,?)",
-    mysqlOpt.formatParams(id, user.name, user.nick, user.pwd),
+    "insert into user values (?,?,?,?,?)",
+    mysqlOpt.formatParams(id, user.name, user.nick, user.pwd, 0),
     () => {
       resp.json(msgResult.msg("注册成功"));
     },

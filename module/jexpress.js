@@ -137,6 +137,9 @@ app.post('/addComment', (req, resp) => {
   comments.addComment(req, resp);
 });
 
+app.post('/getUserComments', (req, resp) => {
+  comments.getUserComments(req, resp);
+})
 
 const movie = require("./movie");
 // app.post("/saveMovie", (req, resp) => {

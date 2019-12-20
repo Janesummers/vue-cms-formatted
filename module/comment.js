@@ -26,6 +26,26 @@ var getComments = (req, resp) => {
   )
 };
 
+var getUserComments = (req, resp) => {
+  var params = qs.parse(req.body);
+  let pageNo = params.pageNo ? parseInt(params.pageNo) : 1;
+  let pageSize = params.pageSize ? parseInt(params.pageSize) : 10;
+  mysqlOpt.exec(
+    `select * 
+     from comments  
+     where type = 1
+     limit ?,?`,
+    mysqlOpt.formatParams((pageNo - 1) * pageSize, pageSize),
+    res => {
+      resp.json(msgResult.msg(res));
+    },
+    e => {
+      console.log(msgResult.error(e.message));
+      resp.end()
+    }
+  )
+};
+
 var addComment = (req, resp) => {
   var params = qs.parse(req.body);
   if (!params || !params.id || (params.belongId.length !== 16 && params.belongId.length !== 19)) {
@@ -49,5 +69,6 @@ var addComment = (req, resp) => {
 
 module.exports = {
   getComments,
-  addComment
+  addComment,
+  getUserComments
 };

@@ -44,7 +44,7 @@ var setGoods = (req, resp) => {
       values (?,?,?,?,?,?,?,?)`,
     mysqlOpt.formatParams(id, params.img, params.title, price, oldPrice, '热卖中', params.left_count, content_id),
     res => {
-      saveDetailImg();
+      saveBannerImg();
     },
     e => {
       console.log(msgResult.error(e.message));
@@ -105,15 +105,18 @@ var alterGoods = (req, resp) => {
   }
   let price = parseFloat(params.price);
   let oldPrice = parseFloat(params.oldPrice);
-  let bannerImg = params.bannerImg;
-  let detailImg = params.detailImg;
+  
+  let {bannerChange,
+    detailChange,
+    newBanner,
+    newDetail,
+    bannerDel,
+    detailDel} = params;
   let len = 0;
-  if (bannerImg) {
-    len = bannerImg.length - 1;
-  }
   let i = 0;
   let id = params.id;
   let content_id = params.content_id;
+
   mysqlOpt.exec(
     `
       update goods
@@ -121,20 +124,13 @@ var alterGoods = (req, resp) => {
       where id = ?
     `,
     mysqlOpt.formatParams(params.img, params.title, price, oldPrice, params.left_count, id),
-    res => {
-      if (len > 0) {
-        saveBannerImg();
+    () => {
+      if (bannerChange) {
+        len = bannerChange.length > 1 ? bannerChange.length - 1 : bannerChange.length;
+        i = 0;
+        updateBanner('no');
       } else {
-        if (detailImg) {
-          len = detailImg.length - 1;
-          i = 0;
-          if (len > 0) {
-            saveDetailImg();
-          }
-        } else {
-          resp.json(msgResult.msg("ok"));
-        }
-        
+        updateBanner('yes');
       }
     },
     e => {
@@ -143,49 +139,165 @@ var alterGoods = (req, resp) => {
     }
   )
 
-  function saveBannerImg () {
-    mysqlOpt.exec(
-      `insert into imgs
-        values (?,?,?,?,?,?,?)`,
-      mysqlOpt.formatParams(null, id, bannerImg[i], null, null, null, null),
-      res => {
-        if (len > 0) {
+  function updateBanner (skip) {
+    if (skip == 'no' && len > 0) {
+      mysqlOpt.exec(
+        `update imgs
+          set src = ?
+          where id = ?`,
+        mysqlOpt.formatParams(bannerChange[i].src, bannerChange[i].id),
+        () => {
+          len--;
+          i++;
+          updateBanner(skip);
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
+        }
+      )
+    } else {
+      if (detailChange) {
+        len = detailChange.length > 1 ? detailChange.length - 1 : detailChange.length;
+        i = 0;
+        updateDetail('no');
+      } else {
+        updateDetail('yes');
+      }
+    }
+  }
+
+  function updateDetail (skip) {
+    if (skip == 'no' && len > 0) {
+      mysqlOpt.exec(
+        `update imgs
+          set src = ?
+          where id = ?`,
+        mysqlOpt.formatParams(detailChange[i].src, detailChange[i].id),
+        () => {
+          len--;
+          i++;
+          updateDetail(skip);
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
+        }
+      )
+    } else {
+      if (bannerDel) {
+        len = bannerDel.length > 1 ? bannerDel.length - 1 : bannerDel.length;
+        i = 0;
+        delBannerImg('no');
+      } else {
+        delBannerImg('yes');
+      }
+    }
+  }
+
+  function delBannerImg (skip) {
+    if (skip == 'no' && len > 0) {
+      mysqlOpt.exec(
+        `delete from imgs
+          where id = ?`,
+        mysqlOpt.formatParams(bannerDel[i].id),
+        () => {
+          len--;
+          i++;
+          delBannerImg(skip);
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
+        }
+      )
+    } else {
+      if (detailDel) {
+        len = detailDel.length > 1 ? detailDel.length - 1 : detailDel.length;
+        i = 0;
+        delDetailImg('no');
+      } else {
+        delDetailImg('yes');
+      }
+    }
+  }
+
+  function delDetailImg (skip) {
+    if (skip == 'no' && len > 0) {
+      mysqlOpt.exec(
+        `delete from imgs
+          where id = ?`,
+        mysqlOpt.formatParams(detailDel[i].id),
+        () => {
+          len--;
+          i++;
+          delDetailImg(skip);
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
+        }
+      )
+    } else {
+      if (newBanner) {
+        len = newBanner.length > 1 ? newBanner.length - 1 : newBanner.length;
+        i = 0;
+        saveBannerImg('no');
+      } else {
+        saveBannerImg('yes');
+      }
+    }
+  }
+
+  function saveBannerImg (skip) {
+    if (skip && len > 0) {
+      mysqlOpt.exec(
+        `insert into imgs
+          values (?,?,?,?,?,?,?)`,
+        mysqlOpt.formatParams(null, id, newBanner[i].src, null, null, null, null),
+        () => {
+          console.log('ready to 5 -> next')
           len--;
           i++;
           saveBannerImg();
-        } else {
-          len = detailImg.length - 1;
-          i = 0;
-          saveDetailImg();
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
         }
-      },
-      e => {
-        console.log(msgResult.error(e.message));
-        resp.end()
+      )
+    } else {
+      if (newDetail) {
+        len = newDetail.length > 1 ? newDetail.length - 1 : newDetail.length;
+        i = 0;
+        saveDetailImg('no');
+      } else {
+        saveDetailImg('yes');
       }
-    )
+    }
   }
 
-  function saveDetailImg () {
-    mysqlOpt.exec(
-      `insert into imgs
-        values (?,?,?,?,?,?,?)`,
-      mysqlOpt.formatParams(null, content_id, detailImg[i], null, null, null, null),
-      res => {
-        if (len > 0) {
+  function saveDetailImg (skip) {
+    if (skip == 'no' && len > 0) {
+      mysqlOpt.exec(
+        `insert into imgs
+         values (?,?,?,?,?,?,?)`,
+        mysqlOpt.formatParams(null, content_id, newDetail[i].src, null, null, null, null),
+        () => {
           len--;
           i++;
-          saveDetailImg();
-        } else {
-          resp.json(msgResult.msg("ok"));
+          saveDetailImg(skip);
+        },
+        e => {
+          console.log(msgResult.error(e.message));
+          resp.end()
         }
-      },
-      e => {
-        console.log(msgResult.error(e.message));
-        resp.end()
-      }
-    )
+      )
+    } else {
+      resp.json(msgResult.msg("ok"));
+    }
   }
+
 }
 
 var delGoods = (req, resp) => {
@@ -468,7 +580,7 @@ let clearAllMyGoods = (req, resp) => {
     if (i >= 0) {
       mysqlOpt.exec(
       `
-        delete card
+        delete
         from card
         where belongId = ?
       `,
